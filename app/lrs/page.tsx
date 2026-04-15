@@ -1,16 +1,6 @@
 import Link from "next/link";
 import { getLrListPageData } from "../../lib/lr-data";
 import {
-<<<<<<< HEAD
-  AdminShell,
-  Pagination,
-  SetupError,
-  StatCard,
-  SurfaceCard,
-  currency,
-  formatDate,
-  getPageNumber,
-=======
     AdminShell,
     Pagination,
     SetupError,
@@ -19,7 +9,6 @@ import {
     currency,
     formatDate,
     getPageNumber,
->>>>>>> acc855e (new changes)
 } from "../_components/admin-ui";
 
 const paymentTone: Record<string, string> = {
@@ -65,10 +54,7 @@ export default async function LrsPage({
                 <th className="px-5 py-3 font-medium">LR</th>
                 <th className="px-5 py-3 font-medium">Mobile</th>
                 <th className="px-5 py-3 font-medium">Transporter</th>
-<<<<<<< HEAD
-=======
                 <th className="px-5 py-3 font-medium">Score</th>
->>>>>>> acc855e (new changes)
                 <th className="px-5 py-3 font-medium">Payment</th>
                 <th className="px-5 py-3 font-medium">Freight</th>
                 <th className="px-5 py-3 font-medium">Shares</th>
@@ -91,14 +77,11 @@ export default async function LrsPage({
                   <td className="px-5 py-4 text-slate-600">
                     {lr.transporterName || "No transporter"}
                   </td>
-<<<<<<< HEAD
-=======
                   <td className="px-5 py-4 text-slate-900 font-semibold">
                     {typeof lr.completionScore === "number"
                       ? `${lr.completionScore.toFixed(1)}/10`
                       : "0.0/10"}
                   </td>
->>>>>>> acc855e (new changes)
                   <td className="px-5 py-4">
                     <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${paymentTone[lr.paymentType || ""] || "bg-slate-100 text-slate-700"}`}>
                       {(lr.paymentType || "unknown").replaceAll("_", " ")}
