@@ -40,7 +40,7 @@ export interface LorryReceipt {
   updatedAt?: Date | null;
   shareCount?: number;
   sharePdfUrl?: string | null;
-  completionScore?: number;
+  completionScore: number;
 }
 
 export interface DashboardData {
