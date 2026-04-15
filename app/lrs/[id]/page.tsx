@@ -1,20 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-<<<<<<< HEAD
-  AdminShell,
-  DetailRow,
-  SurfaceCard,
-  SetupError,
-  currency,
-  formatDate,
-} from "../../_components/admin-ui";
-import {
-  getLrDetail,
-  getTransporterKeyForRecord,
-  getUserKeyForRecord,
-} from "../../../lib/lr-data";
-=======
     getLrDetail,
     getTransporterKeyForRecord,
     getUserKeyForRecord,
@@ -27,7 +13,6 @@ import {
     currency,
     formatDate,
 } from "../../_components/admin-ui";
->>>>>>> acc855e (new changes)
 
 export default async function LrDetailPage({
   params,
@@ -54,9 +39,6 @@ export default async function LrDetailPage({
         <SummaryTile label="LR Number" value={lr.lrNumber || "Not provided"} />
         <SummaryTile label="LR Date" value={lr.lrDate || "Not provided"} />
         <SummaryTile label="Transporter" value={lr.transporterName || "Not provided"} />
-<<<<<<< HEAD
-        <SummaryTile label="Payment" value={formatPaymentType(lr.paymentType)} />
-=======
         <SummaryTile
           label="Completion score"
           value={
@@ -65,7 +47,6 @@ export default async function LrDetailPage({
               : "0.0/10"
           }
         />
->>>>>>> acc855e (new changes)
       </section>
 
       <SurfaceCard
