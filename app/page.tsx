@@ -1,15 +1,4 @@
 import Link from "next/link";
-<<<<<<< HEAD
-import {
-  AdminShell,
-  SetupError,
-  StatCard,
-  SurfaceCard,
-  currency,
-  formatDate,
-} from "./_components/admin-ui";
-import { getDashboardData } from "../lib/lr-data";
-=======
 import { getDashboardData } from "../lib/lr-data";
 import {
     AdminShell,
@@ -18,7 +7,6 @@ import {
     SurfaceCard,
     formatDate
 } from "./_components/admin-ui";
->>>>>>> acc855e (new changes)
 
 const paymentTone: Record<string, string> = {
   paid: "bg-emerald-50 text-emerald-700",
@@ -31,15 +19,10 @@ export default async function Home() {
     await getDashboardData();
   const recent = lrs.slice(0, 7);
   const recentUsers = userBreakdown.slice(0, 5);
-<<<<<<< HEAD
-  const recentTransporters = transporterBreakdown.slice(0, 5);
-  const activitySeries = buildLast7DaysSeries(lrs);
-=======
   const activitySeries = buildLast7DaysSeries(lrs);
   const dailyGrowthRate = calculateDailyGrowthRate(activitySeries.activeUsers);
   const weeklyNewUserGrowthRate = calculateWeeklyNewUserGrowthRate(lrs);
   const averageSessionTimeMs = calculateAverageSessionTime(lrs);
->>>>>>> acc855e (new changes)
 
   return (
     <AdminShell
@@ -47,11 +30,7 @@ export default async function Home() {
       description="Track LR activity, user counts, transporter activity, and recent records from one dashboard."
       section="overview"
     >
-<<<<<<< HEAD
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-=======
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-4">
->>>>>>> acc855e (new changes)
         <StatCard label="Total Users" value={stats.uniqueMobileUsers.toString()} />
         <StatCard label="New This Month" value={recentUsers.length.toString()} />
         <StatCard label="Total LRs" value={stats.totalRecords.toString()} />
@@ -60,12 +39,6 @@ export default async function Home() {
 
       <SetupError error={error} />
 
-<<<<<<< HEAD
-      <section className="grid gap-4 xl:grid-cols-2">
-        <SurfaceCard
-          title="Active Users — Last 7 Days"
-          subtitle="Based on unique mobile numbers that created at least one LR on each day."
-=======
       <section className="grid gap-4 md:grid-cols-3">
         <StatCard
           label="Daily user growth"
@@ -85,7 +58,6 @@ export default async function Home() {
         <SurfaceCard
           title="Active Users — Last 7 Days"
           subtitle="Based on users who created or shared an LR on each day."
->>>>>>> acc855e (new changes)
         >
           <div className="p-5">
             <MiniBarChart
@@ -110,68 +82,6 @@ export default async function Home() {
         </SurfaceCard>
       </section>
 
-<<<<<<< HEAD
-      <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
-        <SurfaceCard title="Recent user activity" subtitle="Users with the most recent LR creation">
-          <div className="divide-y divide-slate-100">
-            {recentUsers.map((user) => (
-              <Link
-                key={user.key}
-                href={`/users/${encodeURIComponent(user.key)}`}
-                className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
-              >
-                <div>
-                  <p className="font-medium text-slate-900">{user.phoneNumber}</p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Latest LR: {user.latestLrNumber || "No LR number"}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-slate-950">{user.lrCount}</p>
-                  <p className="text-sm text-slate-500">LRs</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </SurfaceCard>
-
-        <SurfaceCard
-          title="Transporter activity"
-          subtitle="Recently active transporters"
-          actions={
-            <Link href="/transporters" className="text-sm font-medium text-slate-500 hover:text-slate-900">
-              View all
-            </Link>
-          }
-        >
-          <div className="divide-y divide-slate-100">
-            {recentTransporters.map((transporter) => (
-              <Link
-                key={transporter.key}
-                href={`/transporters/${encodeURIComponent(transporter.key)}`}
-                className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
-              >
-                <div>
-                  <p className="font-medium text-slate-900">
-                    {transporter.transporterName}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {currency.format(transporter.totalFreight)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-slate-950">
-                    {transporter.lrCount}
-                  </p>
-                  <p className="text-sm text-slate-500">LRs</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </SurfaceCard>
-      </section>
-=======
->>>>>>> acc855e (new changes)
 
       <SurfaceCard
         title="Recent LRs"
@@ -189,10 +99,7 @@ export default async function Home() {
                 <th className="px-5 py-3 font-medium">LR</th>
                 <th className="px-5 py-3 font-medium">Mobile</th>
                 <th className="px-5 py-3 font-medium">Transporter</th>
-<<<<<<< HEAD
-=======
                 <th className="px-5 py-3 font-medium">Score</th>
->>>>>>> acc855e (new changes)
                 <th className="px-5 py-3 font-medium">Payment</th>
                 <th className="px-5 py-3 font-medium">Created</th>
               </tr>
@@ -217,14 +124,11 @@ export default async function Home() {
                   <td className="px-5 py-4 text-slate-600">
                     {lr.transporterName || "No transporter"}
                   </td>
-<<<<<<< HEAD
-=======
                   <td className="px-5 py-4 text-slate-900 font-semibold">
                     {typeof lr.completionScore === "number"
                       ? `${lr.completionScore.toFixed(1)}/10`
                       : "0.0/10"}
                   </td>
->>>>>>> acc855e (new changes)
                   <td className="px-5 py-4">
                     <span
                       className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
@@ -311,9 +215,6 @@ function MiniBarChart({
 }
 
 function buildLast7DaysSeries(
-<<<<<<< HEAD
-  lrs: Array<{ createdAt?: Date | null; phoneNumber?: string | null; userId?: string | null }>
-=======
   lrs: Array<{
     createdAt?: Date | null;
     updatedAt?: Date | null;
@@ -322,7 +223,6 @@ function buildLast7DaysSeries(
     shareCount?: number;
     sharePdfUrl?: string | null;
   }>
->>>>>>> acc855e (new changes)
 ) {
   const formatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
   const labels: string[] = [];
@@ -339,20 +239,12 @@ function buildLast7DaysSeries(
     const dayEnd = new Date(dayStart);
     dayEnd.setDate(dayStart.getDate() + 1);
 
-<<<<<<< HEAD
-    const dayRecords = lrs.filter((lr) => {
-=======
     const createdRecords = lrs.filter((lr) => {
->>>>>>> acc855e (new changes)
       if (!lr.createdAt) return false;
       const created = new Date(lr.createdAt);
       return created >= dayStart && created < dayEnd;
     });
 
-<<<<<<< HEAD
-    const dayUsers = new Set(
-      dayRecords
-=======
     const sharedRecords = lrs.filter((lr) => {
       if (!lr.updatedAt) return false;
       const updated = new Date(lr.updatedAt);
@@ -365,24 +257,17 @@ function buildLast7DaysSeries(
 
     const dayUsers = new Set(
       [...createdRecords, ...sharedRecords]
->>>>>>> acc855e (new changes)
         .map((lr) => lr.phoneNumber || lr.userId || "")
         .filter(Boolean)
     );
 
     labels.push(formatter.format(dayStart));
     activeUsers.push(dayUsers.size);
-<<<<<<< HEAD
-    lrCount.push(dayRecords.length);
-=======
     lrCount.push(createdRecords.length);
->>>>>>> acc855e (new changes)
   }
 
   return { labels, activeUsers, lrCount };
 }
-<<<<<<< HEAD
-=======
 
 function calculateDailyGrowthRate(activeUsers: number[]) {
   if (activeUsers.length < 2) return 0;
@@ -467,4 +352,3 @@ function formatDuration(milliseconds: number) {
   }
   return `${minutes}m`;
 }
->>>>>>> acc855e (new changes)
