@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin-auth";
+import Link from "next/link";
 import { LogoutButton } from "./logout-button";
 
 export const currency = new Intl.NumberFormat("en-IN", {
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { key: "overview", href: "/", label: "Overview" },
   { key: "users", href: "/users", label: "Users" },
   { key: "lrs", href: "/lrs", label: "LRs" },
+  { key: "trips", href: "/trips", label: "Trips" },
   { key: "transporters", href: "/transporters", label: "Transporters" },
 ] as const;
 

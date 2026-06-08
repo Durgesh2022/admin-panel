@@ -83,7 +83,66 @@ export interface LrListPageData {
   error?: string;
 }
 
+export interface TripRecord {
+  id: string;
+  origin?: string;
+  destination?: string;
+  src?: string | null;
+  dest?: string | null;
+  tel?: string;
+  truck_number?: string;
+  vh_type?: string;
+  user?: string;
+  user_email?: string;
+  lrNumber?: string;
+  response?: Record<string, any>;
+  userId?: string;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+}
+
+export interface TripListPageData {
+  trips: TripRecord[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    startIndex: number;
+    endIndex: number;
+  };
+  error?: string;
+}
+
+export interface BiltyUser {
+  id: string;
+  uid?: string;
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  user?: string;
+  user_email?: string;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  [key: string]: unknown;
+}
+
+export interface BiltyUserListPageData {
+  users: BiltyUser[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    startIndex: number;
+    endIndex: number;
+  };
+  error?: string;
+}
+
 const LR_COLLECTION = "io.traqo.biltylr";
+const TRIP_COLLECTION = "io.traqo.trips";
+const BILTY_USER_COLLECTION = "biltyUser";
 
 export interface UserBreakdown {
   key: string;
@@ -200,6 +259,34 @@ function mapLrDoc(
     ...lr,
     completionScore: calculateLrCompletionScore(lr),
   };
+}
+
+function mapTripDoc(
+  doc: FirebaseFirestore.QueryDocumentSnapshot | FirebaseFirestore.DocumentSnapshot
+) {
+  const data = doc.data();
+  if (!data) return null;
+
+  return {
+    id: doc.id,
+    ...data,
+    createdAt: toDate(data.createdAt),
+    updatedAt: toDate(data.updatedAt),
+  } as TripRecord;
+}
+
+function mapBiltyUserDoc(
+  doc: FirebaseFirestore.QueryDocumentSnapshot | FirebaseFirestore.DocumentSnapshot
+) {
+  const data = doc.data();
+  if (!data) return null;
+
+  return {
+    id: doc.id,
+    ...data,
+    createdAt: toDate(data.createdAt),
+    updatedAt: toDate(data.updatedAt),
+  } as BiltyUser;
 }
 
 function buildCredentialError(error: unknown) {
@@ -513,6 +600,123 @@ export async function getLrListPageData(
       },
       error: buildCredentialError(error),
     };
+  }
+}
+
+export async function getTripListPageData(
+  page: number,
+  pageSize: number
+): Promise<TripListPageData> {
+  try {
+    const db = getAdminDb();
+    const collection = db.collection(TRIP_COLLECTION);
+    const safePage = Math.max(page, 1);
+    const safePageSize = Math.max(pageSize, 1);
+
+    const totalSnapshot = await collection.count().get();
+    const totalItems = totalSnapshot.data().count;
+    const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+    const normalizedPage = Math.min(safePage, totalPages);
+    const offset = (normalizedPage - 1) * safePageSize;
+
+    const pageSnapshot = await collection
+      .orderBy("createdAt", "desc")
+      .offset(offset)
+      .limit(safePageSize)
+      .get();
+
+    const trips = pageSnapshot.docs
+      .map((doc) => mapTripDoc(doc))
+      .filter((trip): trip is TripRecord => trip !== null);
+
+    return {
+      trips,
+      pagination: {
+        page: normalizedPage,
+        pageSize: safePageSize,
+        totalItems,
+        totalPages,
+        startIndex: totalItems === 0 ? 0 : offset + 1,
+        endIndex: Math.min(offset + trips.length, totalItems),
+      },
+    };
+  } catch (error) {
+    return {
+      trips: [],
+      pagination: {
+        page: 1,
+        pageSize,
+        totalItems: 0,
+        totalPages: 1,
+        startIndex: 0,
+        endIndex: 0,
+      },
+      error: buildCredentialError(error),
+    };
+  }
+}
+
+export async function getBiltyUserListPageData(
+  page: number,
+  pageSize: number
+): Promise<BiltyUserListPageData> {
+  try {
+    const db = getAdminDb();
+    const collection = db.collection(BILTY_USER_COLLECTION);
+    const safePage = Math.max(page, 1);
+    const safePageSize = Math.max(pageSize, 1);
+
+    const totalSnapshot = await collection.count().get();
+    const totalItems = totalSnapshot.data().count;
+    const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+    const normalizedPage = Math.min(safePage, totalPages);
+    const offset = (normalizedPage - 1) * safePageSize;
+
+    const pageSnapshot = await collection
+      .orderBy("createdAt", "desc")
+      .offset(offset)
+      .limit(safePageSize)
+      .get();
+
+    const users = pageSnapshot.docs
+      .map((doc) => mapBiltyUserDoc(doc))
+      .filter((user): user is BiltyUser => user !== null);
+
+    return {
+      users,
+      pagination: {
+        page: normalizedPage,
+        pageSize: safePageSize,
+        totalItems,
+        totalPages,
+        startIndex: totalItems === 0 ? 0 : offset + 1,
+        endIndex: Math.min(offset + users.length, totalItems),
+      },
+    };
+  } catch (error) {
+    return {
+      users: [],
+      pagination: {
+        page: 1,
+        pageSize,
+        totalItems: 0,
+        totalPages: 1,
+        startIndex: 0,
+        endIndex: 0,
+      },
+      error: buildCredentialError(error),
+    };
+  }
+}
+
+export async function getBiltyUserByUid(uid: string) {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db.collection(BILTY_USER_COLLECTION).doc(uid).get();
+    const user = mapBiltyUserDoc(snapshot);
+    return { user, error: undefined };
+  } catch (error) {
+    return { user: null, error: buildCredentialError(error) };
   }
 }
 
