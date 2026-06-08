@@ -18,7 +18,6 @@ export default async function Home() {
   const { lrs, userBreakdown, transporterBreakdown, stats, error } =
     await getDashboardData();
   const recent = lrs.slice(0, 7);
-  const recentUsers = userBreakdown.slice(0, 5);
   const activitySeries = buildLast7DaysSeries(lrs);
   const dailyGrowthRate = calculateDailyGrowthRate(activitySeries.activeUsers);
   const weeklyNewUserGrowthRate = calculateWeeklyNewUserGrowthRate(lrs);
@@ -31,8 +30,8 @@ export default async function Home() {
       section="overview"
     >
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-4">
-        <StatCard label="Total Users" value={stats.uniqueMobileUsers.toString()} />
-        <StatCard label="New This Month" value={recentUsers.length.toString()} />
+        <StatCard label="Total Users" value={stats.totalUsers.toString()} />
+        <StatCard label="New This Month" value={stats.newUsersThisMonth.toString()} />
         <StatCard label="Total LRs" value={stats.totalRecords.toString()} />
         <StatCard label="Transporters" value={transporterBreakdown.length.toString()} />
       </section>

@@ -49,6 +49,8 @@ export interface DashboardData {
   transporterBreakdown: TransporterBreakdown[];
   stats: {
     totalRecords: number;
+    totalUsers: number;
+    newUsersThisMonth: number;
     totalFreight: number;
     totalPaid: number;
     totalPending: number;
@@ -153,6 +155,7 @@ export interface UserBreakdown {
   totalPaid: number;
   totalPending: number;
   totalPackages: number;
+  firstCreatedAt: Date | null;
   latestCreatedAt: Date | null;
   latestUpdatedAt: Date | null;
   latestLrNumber?: string;
@@ -302,11 +305,18 @@ function buildCredentialError(error: unknown) {
 export async function getDashboardData(): Promise<DashboardData> {
   try {
     const db = getAdminDb();
-    const snapshot = await db.collection(LR_COLLECTION).get();
+    const [snapshot, userSnapshot] = await Promise.all([
+      db.collection(LR_COLLECTION).get(),
+      db.collection(BILTY_USER_COLLECTION).get(),
+    ]);
 
     const lrs = snapshot.docs
       .map((doc) => mapLrDoc(doc))
       .filter((lr): lr is LorryReceipt => lr !== null);
+
+    const biltyUsers = userSnapshot.docs
+      .map((doc) => mapBiltyUserDoc(doc))
+      .filter((user): user is BiltyUser => user !== null);
 
     lrs.sort((a, b) => {
       const aTime = a.createdAt?.getTime() ?? 0;
@@ -341,6 +351,7 @@ export async function getDashboardData(): Promise<DashboardData> {
           totalPaid: lr.paidAmount ?? 0,
           totalPending: pendingAmount,
           totalPackages: lr.totalPackages ?? 0,
+          firstCreatedAt: lr.createdAt ?? null,
           latestCreatedAt: lr.createdAt ?? null,
           latestUpdatedAt: lr.updatedAt ?? null,
           latestLrNumber: lr.lrNumber,
@@ -402,6 +413,29 @@ export async function getDashboardData(): Promise<DashboardData> {
       (user) => user.phoneNumber !== "No phone number"
     ).length;
     const usersWithMissingPhone = userBreakdown.length - uniqueMobileUsers;
+    const currentMonthStart = new Date();
+    currentMonthStart.setDate(1);
+    currentMonthStart.setHours(0, 0, 0, 0);
+    const nextMonthStart = new Date(currentMonthStart);
+    nextMonthStart.setMonth(currentMonthStart.getMonth() + 1);
+
+    const lrUserKeys = new Set(userBreakdown.map((user) => user.key));
+    for (const user of biltyUsers) {
+      const normalizedPhone = normalizePhoneNumber(user.phoneNumber);
+      const userKey = normalizedPhone || user.uid || user.id;
+
+      if (userKey && !lrUserKeys.has(userKey)) {
+        lrUserKeys.add(userKey);
+      }
+    }
+
+    const totalUsers = lrUserKeys.size;
+    const newUsersThisMonth = biltyUsers.filter(
+      (user) =>
+        user.createdAt &&
+        user.createdAt >= currentMonthStart &&
+        user.createdAt < nextMonthStart
+    ).length;
     const averageFreightPerLr = lrs.length > 0 ? totalFreight / lrs.length : 0;
     const completedLrs = lrs.filter(isCompleteLr).length;
     const completionScore = lrs.length > 0
@@ -488,6 +522,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       transporterBreakdown,
       stats: {
         totalRecords: lrs.length,
+        totalUsers,
+        newUsersThisMonth,
         totalFreight,
         totalPaid,
         totalPending,
@@ -512,6 +548,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       transporterBreakdown: [],
       stats: {
         totalRecords: 0,
+        totalUsers: 0,
+        newUsersThisMonth: 0,
         totalFreight: 0,
         totalPaid: 0,
         totalPending: 0,
